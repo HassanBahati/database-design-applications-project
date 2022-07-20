@@ -2,17 +2,21 @@ import csv
 from cs50 import SQL
 
 # open database 
-open("gross_movies_db.db", "w").close()
+open("books.db", "w").close()
 
-db=SQL("sqlite:///gross_movies_db.db")
+db=SQL("sqlite:///books.db")
 
 # create table movies
 db.execute("CREATE TABLE movies (id INTEGER, title TEXT, PRIMARY KEY(id))")
 
-#create table genre
-db.execute("CREATE TABLE genre (movie_id INTEGER, genre TEXT, FOREIGN KEY(movie_id) REFERENCES movies(id))" )
+# connecting table 
+db.execute("CREATE TABLE connect (movie_id INTEGER, genre_id INTEGER, FOREIGN KEY(movie_id) REFERENCES movies(id), FOREIGN KEY(genre_id) REFERENCES genre(id))")
 
-with open("gross movies.csv", "r") as file:
+#create table genre
+db.execute("CREATE TABLE genre (id INTEGER, genre TEXT, FOREIGN KEY(id) REFERENCES movies(id))" )
+
+
+with open("books.csv", "r") as file:
     #store in file called reader
     reader = csv.DictReader(file)
 
@@ -21,9 +25,12 @@ with open("gross movies.csv", "r") as file:
         title = row["Film"].strip().capitalize()
 
         #insert data into movies table 
-        id=db.execute("INSERT INTO movies (title) VALUES(?)", title)
+        movies_id=db.execute("INSERT INTO movies (title) VALUES(?)", title)
 
         for genre in row["Genre"].split(","):
             
             #insert data into genre table
-            db.execute("INSERT INTO genre (movie_id, genre) VALUES(?,?)", id, genre)
+            genre_id=db.execute("INSERT INTO genre (id, genre) VALUES(?,?)", movies_id, genre)
+
+            db.execute("INSERT INTO connect (movie_id,genre_id) VALUES(?,?)", movies_id,genre_id)
+
