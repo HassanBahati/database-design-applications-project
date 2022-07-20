@@ -6,14 +6,27 @@ open("books.db", "w").close()
 
 db=SQL("sqlite:///books.db")
 
-# create table movies
-db.execute("CREATE TABLE movies (id INTEGER, title TEXT, PRIMARY KEY(id))")
+# create table authors
+db.execute("CREATE TABLE authors (id INTEGER, name TEXT, nationality TEXT, PRIMARY KEY(id))")
 
-# connecting table 
-db.execute("CREATE TABLE connect (movie_id INTEGER, genre_id INTEGER, FOREIGN KEY(movie_id) REFERENCES movies(id), FOREIGN KEY(genre_id) REFERENCES genre(id))")
+#create table books
+db.execute("CREATE TABLE books (id INTEGER, title TEXT, publisher TEXT, edition INTEGER, PRIMARY KEY(id))" )
 
-#create table genre
-db.execute("CREATE TABLE genre (id INTEGER, genre TEXT, FOREIGN KEY(id) REFERENCES movies(id))" )
+# connecting table stars
+db.execute("CREATE TABLE stars (book_id INTEGER, author_id INTEGER, FOREIGN KEY(book_id) REFERENCES books(id), FOREIGN KEY(author_id) REFERENCES authors(id))")
+
+#create table collections
+db.execute("CREATE TABLE collections (book_id INTEGER, collection TEXT, FOREIGN KEY(id) REFERENCES books(id))" )
+
+#create table rating
+db.execute("CREATE TABLE rating (book_id INTEGER, rating TINTEGER, FOREIGN KEY(id) REFERENCES books(id))" )
+
+#create table sales
+db.execute("CREATE TABLE sales (id INTEGER, quantity TINTEGER, PRIMARY KEY(id))" )
+
+# connecting table receipts
+db.execute("CREATE TABLE receipts (book_id INTEGER, sales_id INTEGER, FOREIGN KEY(book_id) REFERENCES books(id), FOREIGN KEY(sales_id) REFERENCES sales(id))")
+
 
 
 with open("books.csv", "r") as file:
