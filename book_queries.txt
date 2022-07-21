@@ -1,2 +1,11 @@
 Get the name of the author of a book "Data Scientists at work"
 SELECT name FROM books JOIN stars JOIN authors ON stars.book_id=books.id AND stars.author_id=authors.id WHERE books.title LIKE "%Data Scientists at Work%";
+
+Get all books 
+SELECT * FROM books;
+
+Get the title of books of the author "Stephen"
+SELECT title FROM authors JOIN stars JOIN books ON stars.book_id=books.id AND stars.author_id=authors.id WHERE authors.name LIKE "%Stephen%";
+
+get the number of sales of a book called "How to Think Like Sherlock Holmes"
+SELECT quantity FROM books JOIN sales JOIN receipts ON receipts.book_id=books.id AND receipts.sales_id=sales.id WHERE books.title LIKE "%How to Think Like Sherlock Holmes%";
