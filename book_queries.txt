@@ -11,5 +11,5 @@ get the number of sales of a book called "How to Think Like Sherlock Holmes"
 SELECT quantity FROM books JOIN sales JOIN receipts ON receipts.book_id=books.id AND receipts.sales_id=sales.id WHERE books.title LIKE "%How to Think Like Sherlock Holmes%";
 
 
-get the rating of a book
+get the title and rating of all book
 SELECT title,rating FROM books JOIN rating ON rating.book_id=books.id;
