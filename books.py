@@ -1,81 +1,63 @@
 import csv
 from cs50 import SQL
 
-# open database
+# open database 
 open("books.db", "w").close()
 
-db = SQL("sqlite:///books.db")
+db=SQL("sqlite:///books.db")
 
 # create table authors
-db.execute(
-    "CREATE TABLE authors (id INTEGER, name TEXT, nationality TEXT, PRIMARY KEY(id))")
+db.execute("CREATE TABLE authors (id INTEGER, name TEXT, PRIMARY KEY(id))")
 
 # create table books
-db.execute("CREATE TABLE books (id INTEGER, title TEXT, publisher TEXT, edition INTEGER, PRIMARY KEY(id))")
-
-# connecting table stars
-db.execute("CREATE TABLE stars (book_id INTEGER, author_id INTEGER, FOREIGN KEY(book_id) REFERENCES books(id), FOREIGN KEY(author_id) REFERENCES authors(id))")
-
-# create table collections
-db.execute("CREATE TABLE collections (book_id INTEGER, collection TEXT, FOREIGN KEY(id) REFERENCES books(id))")
-
-# create table rating
-db.execute(
-    "CREATE TABLE rating (book_id INTEGER, rating INTEGER, FOREIGN KEY(id) REFERENCES books(id))")
+db.execute("CREATE TABLE books (id INTEGER, title TEXT, PRIMARY KEY(id))")
 
 # create table sales
 db.execute("CREATE TABLE sales (id INTEGER, quantity INTEGER, PRIMARY KEY(id))")
 
-# connecting table receipts
-db.execute("CREATE TABLE receipts (book_id INTEGER, sales_id INTEGER, FOREIGN KEY(book_id) REFERENCES books(id), FOREIGN KEY(sales_id) REFERENCES sales(id))")
+#create table collection
+db.execute("CREATE TABLE collection (book_id INTEGER, collection TEXT, FOREIGN KEY(book_id) REFERENCES books(id))" )
 
+# connecting table stars
+db.execute("CREATE TABLE stars (author_id INTEGER, book_id INTEGER, FOREIGN KEY(author_id) REFERENCES authors(id), FOREIGN KEY(book_id) REFERENCES books(id))")
+
+# connecting table receipts
+db.execute("CREATE TABLE receipts (sales_id INTEGER, book_id INTEGER, FOREIGN KEY(sales_id) REFERENCES sales(id), FOREIGN KEY(book_id) REFERENCES books(id))")
+
+# connecting table rating
+db.execute("CREATE TABLE rating (book_id INTEGER, rating INTEGER, FOREIGN KEY(book_id) REFERENCES books(id))")
 
 with open("books.csv", "r") as file:
-    # store in file called reader
+    #store in file called reader
     reader = csv.DictReader(file)
 
     for row in reader:
-        # get book title,publisher,edition and store in variables
+        # get title and store in a variable title 
         title = row["Title"].strip().capitalize()
-        publisher = row["Publisher"].strip().capitalize()
-        edition = row["Edition"].strip()
-
-        # author table
         name = row["Author"].strip().capitalize()
-        nationality = row["Nationality"].strip().capitalize()
+        rating = row["Rating"]
+        quantity = row["Sales"]
 
-        # rating
-        rating = row["Rating"].strip()
 
-        # sales quantity
-        quantity = row["Sales"].strip()
+        #insert data into athours table 
+        author_id=db.execute("INSERT INTO authors (name) VALUES(?)", name)
 
-        # insert data into books table
-        book_id = db.execute(
-            "INSERT INTO books (title,publisher,edition) VALUES(?,?,?)", title, publisher, edition)
+        #insert data into books table 
+        book_id=db.execute("INSERT INTO books (title) VALUES(?)", title)
+        
+        #insert data int stars table 
+        db.execute("INSERT INTO stars (author_id,book_id) VALUES(?,?)", author_id,book_id)
 
-        # insert data into authors table
-        author_id = db.execute(
-            "INSERT INTO authors (name,nationality) VALUES(?,?)", name, nationality)
+        #insert data into sales table 
+        sales_id=db.execute("INSERT INTO sales (quantity) VALUES(?)", quantity)
 
-        # insert data into stars table
-        db.execute(
-            "INSERT INTO stars (book_id,author_id) VALUES(?,?)", book_id, author_id)
+        #insert data int receipts table 
+        db.execute("INSERT INTO receipts (sales_id,book_id) VALUES(?,?)", sales_id,book_id)
 
-        # insert data into rating table
-        db.execute(
-            "INSERT INTO rating (book_id,rating) VALUES(?,?)", book_id, rating)
+        #insert data int rating table 
+        db.execute("INSERT INTO rating (book_id,rating) VALUES(?,?)", book_id,rating)
 
-        # insert data into sales quantity table
-        sales_id = db.execute(
-            "INSERT INTO sales (book_id,quantity) VALUES(?,?)", book_id, quantity)
-
-        # insert data into rating table
-        db.execute(
-            "INSERT INTO receipts (book_id,sales_id) VALUES(?,?)", book_id, sales_id)
-
-        for collection in row["Collection"].strip().capitalize():
-
-            # insert data into collections table
-            db.execute(
-                "INSERT INTO genre (book_id, collection) VALUES(?,?)", book_id, collection)
+        for collection in row["Collection"].split(","):
+            
+            #insert data into collection table
+            db.execute("INSERT INTO collection (book_id, collection) VALUES(?,?)", book_id, collection)
