@@ -17,3 +17,5 @@ The tables include;
     rating table
     sales table
    
+SELECT name FROM books JOIN stars JOIN authors ON stars.book_id=books.id AND stars.author_id=authors.id WHERE books.title LIKE "%Data Scientists at Work%";
+SELECT name FROM books JOIN stars JOIN authors ON stars.book_id=books.id AND stars.author_id=authors.id WHERE books.title LIKE "%Data Scientists at Work%" AND authors.name = 'Hawking, Stephen'
